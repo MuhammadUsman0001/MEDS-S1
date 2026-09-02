@@ -1,10 +1,10 @@
 // Copyright 2026 Maktab-e-Digital Systems Lahore.
 // SPDX-License-Identifier: Apache-2.0
 //
-// tb_meds_s1_sram : unit testbench for meds_s1_sram    [COMPLETE]
+// tb_meds_s1_sram : unit testbench for meds_s1_sram             [COMPLETE]
 // =============================================================================
 
-module tb_meds_s1_sram ();
+module tb_meds_s1_sram();
 
   localparam DW = 64;
   localparam DEPTH = 1024;
@@ -21,11 +21,11 @@ module tb_meds_s1_sram ();
   int unsigned errors = 0;
 
   logic [DW-1:0] ref_mem [0:DEPTH-1];
-
   logic [ADDR_W-1:0] rand_addr;
   logic [DW-1:0] rand_data;
   logic [(DW/8)-1:0] rand_be;
 
+  // DUT instantiation
   meds_s1_sram #(.DW(DW), .DEPTH(DEPTH), .IMPL(0)) DUT (
     .clk_i(clk_i), .rst_ni(rst_ni),
     .req_i(req_i), .we_i(we_i),
@@ -33,21 +33,23 @@ module tb_meds_s1_sram ();
     .rdata_o(rdata_o)
   );
 
+  /* verilator lint_off BLKSEQ */
   initial clk_i = 0;
   always #5 clk_i = ~clk_i;
+  /* verilator lint_on BLKSEQ */
 
   // ---------------------------------------------------------------------------
   // Reference model
   // ---------------------------------------------------------------------------
   function automatic logic [DW-1:0] ref_write(
     input logic [DW-1:0] curr_data,
-    input logic [DW-1:0] wdata_i,
-    input logic [(DW/8)-1:0] be_i
+    input logic [DW-1:0] wdata_in,
+    input logic [(DW/8)-1:0] be_in
   );
     logic [DW-1:0] new_data = curr_data;
     for (int i = 0; i < DW/8; i++) begin
-      if (be_i[i]) begin
-        new_data[i*8 +: 8] = wdata_i[i*8 +: 8];
+      if (be_in[i]) begin
+        new_data[i*8 +: 8] = wdata_in[i*8 +: 8];
       end
     end
     return new_data;
@@ -105,7 +107,7 @@ module tb_meds_s1_sram ();
   // ---------------------------------------------------------------------------
   task automatic init_memory();
     for (int i = 0; i < DEPTH; i++) begin
-      write_mem(i, '0, '1);
+      write_mem(ADDR_W'(i), '0, '1);
       ref_mem[i] = '0;
     end
   endtask
@@ -151,15 +153,15 @@ module tb_meds_s1_sram ();
     // Test 6: Address boundaries
     write_mem(0, 64'h1111111111111111, 8'hFF);
     read_mem(0, "Address 0 boundary");
-    write_mem(DEPTH-1, 64'h2222222222222222, 8'hFF);
-    read_mem(DEPTH-1, "Address DEPTH-1 boundary");
+    write_mem(ADDR_W'(DEPTH-1), 64'h2222222222222222, 8'hFF);
+    read_mem(ADDR_W'(DEPTH-1), "Address DEPTH-1 boundary");
 
     // Test 7: 20 random tests
     $display("Running 20 random tests...");
     for (int i = 0; i < 20; i++) begin
-      rand_addr = $urandom() & (DEPTH - 1);
-      rand_data = $urandom() | ($urandom() << 32);
-      rand_be   = $urandom() & 8'hFF;
+      rand_addr = ADDR_W'($urandom() & (DEPTH - 1));
+      rand_data = DW'($urandom() | ($urandom() << 32));
+      rand_be   = DW'($urandom() & 8'hFF);
       write_mem(rand_addr, rand_data, rand_be);
       read_mem(rand_addr, $sformatf("Random test %0d", i+1));
     end
