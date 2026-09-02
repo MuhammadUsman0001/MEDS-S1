@@ -1,10 +1,10 @@
 // Copyright 2026 Maktab-e-Digital Systems Lahore.
 // SPDX-License-Identifier: Apache-2.0
 //
-// tb_meds_sram_wrapper : unit testbench for meds_sram_wrapper    [COMPLETE]
+// tb_meds_s1_sram : unit testbench for meds_s1_sram    [COMPLETE]
 // =============================================================================
 
-module tb_meds_sram_wrapper();
+module tb_meds_s1_sram ();
 
   localparam DW = 64;
   localparam DEPTH = 1024;
@@ -26,7 +26,7 @@ module tb_meds_sram_wrapper();
   logic [DW-1:0] rand_data;
   logic [(DW/8)-1:0] rand_be;
 
-  meds_sram_wrapper #(.DW(DW), .DEPTH(DEPTH), .IMPL(0)) DUT (
+  meds_s1_sram #(.DW(DW), .DEPTH(DEPTH), .IMPL(0)) DUT (
     .clk_i(clk_i), .rst_ni(rst_ni),
     .req_i(req_i), .we_i(we_i),
     .addr_i(addr_i), .be_i(be_i), .wdata_i(wdata_i),
@@ -115,13 +115,13 @@ module tb_meds_sram_wrapper();
   // ---------------------------------------------------------------------------
   initial begin
     $dumpfile("dump.vcd");
-    $dumpvars(0, tb_meds_sram_wrapper);
+    $dumpvars(0, tb_meds_s1_sram);
 
     rst_ni = 0;
     @(posedge clk_i);
     rst_ni = 1;
 
-    $display("=== tb_meds_sram_wrapper : DW=%0d DEPTH=%0d ===", DW, DEPTH);
+    $display("=== tb_meds_s1_sram : DW=%0d DEPTH=%0d ===", DW, DEPTH);
 
     $display("Initializing all memory to zero...");
     init_memory();
@@ -170,7 +170,7 @@ module tb_meds_sram_wrapper();
       $finish;
     end else begin
       $display("=== FAIL : %0d errors of %0d checks ===", errors, checks);
-      $fatal(1, "tb_meds_sram_wrapper failed");
+      $fatal(1, "tb_meds_s1_sram failed");
     end
   end
 
