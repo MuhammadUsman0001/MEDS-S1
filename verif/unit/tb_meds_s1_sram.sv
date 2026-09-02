@@ -161,7 +161,7 @@ module tb_meds_s1_sram();
     for (int i = 0; i < 20; i++) begin
       rand_addr = ADDR_W'($urandom() & (DEPTH - 1));
       rand_data = DW'($urandom() | ($urandom() << 32));
-      rand_be   = DW'($urandom() & 8'hFF);
+      rand_be   = 8'($urandom() & 8'hFF);
       write_mem(rand_addr, rand_data, rand_be);
       read_mem(rand_addr, $sformatf("Random test %0d", i+1));
     end
