@@ -1,5 +1,3 @@
-What about now:
-Is it better and 100% deliverable:
 # `meds_s1_sram`
 
 | | |
@@ -71,4 +69,4 @@ synthesising the behavioural model into a bitstream.
 
 ## Open questions
 
-- None for now, reviewer or future contricutors can add it.
+- None for now.
